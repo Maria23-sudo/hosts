@@ -1,6 +1,14 @@
 #!/bin/bash
 
-cat /etc/hosts | while read ip host extra; do
+
+
+
+validate_ip(){
+host=$1
+ip=$2
+dns=$3
+
+
 
   if [[ -z "$ip" || "$ip" == \#* || $host == *"localhost"* ]]; then
         continue
@@ -9,8 +17,11 @@ cat /etc/hosts | while read ip host extra; do
     continue
     fi
     
-    real_ip=$(nslookup "$host" 8.8.8.8 2>/dev/null | awk '/Address: / {print $2; exit}')
+    real_ip=$(nslookup "$host" "$dns" 2>/dev/null | awk '/Address: / {print $2; exit}')
     if [ "$real_ip" != "$ip" ]; then
-        echo "Bogus IP for $host in /etc/hosts!"
+        echo "Host has a real ip!"
     fi
-done
+
+}
+
+validate_ip $1 $2 $3 
